@@ -18,6 +18,8 @@ import com.example.bluetoothapplication.data.SpO2;
 import com.example.bluetoothapplication.data.Temp;
 import com.example.bluetoothapplication.databinding.ActivityStartBinding;
 
+import java.util.Arrays;
+
 public class StartActivity extends AppCompatActivity implements DataParser.onPackageReceivedListener {
 
     private ActivityStartBinding binding;
@@ -109,6 +111,7 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
         public void onMessage(byte[] message) {
 //            String str = new String(message);
 //            appendToChat("<- "+str);
+            Log.d(TAG, "Receiveing response : "+ Arrays.toString(message));
             dataParser.add(message);
         }
 
@@ -160,6 +163,7 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
 
     @Override
     public void onNIBPReceived(NIBP nibp) {
+        Log.d(TAG, "Receiveing nibp : "+nibp.toString());
         binding.layoutNibp.tvNIBPinfo.setText(nibp.toString());
     }
 
