@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">BluetoothApplication</string>
+    <string name="bluetooth_title">Bluetooth</string>
+    <string name="search_devices">Search Devices</string>
 </resources>

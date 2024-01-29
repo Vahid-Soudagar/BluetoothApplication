@@ -18,22 +18,10 @@
         android:textSize="18sp"
         android:layout_alignParentTop="true"/>
 
-    <TextView
-        android:id="@+id/activity_chat_messages"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/activity_chat_hello_world"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/activity_chat_status"
-        android:scrollbars="vertical"
-        android:textSize="18sp"
-        android:layout_alignParentLeft="true" />
+   <include
+       android:id="@+id/layout_nibp"
+       layout="@layout/layout_nibp"/>
 
-    <Button
-        android:id="@+id/activity_chat_hello_world"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Send"
-        android:layout_alignParentBottom="true"/>
+
 
 </RelativeLayout>

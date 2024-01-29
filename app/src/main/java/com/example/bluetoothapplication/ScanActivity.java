@@ -187,6 +187,7 @@ public class ScanActivity extends AppCompatActivity {
         }
     };
 
+
     private void startChatActivity(BluetoothDevice device){
         Intent intent = new Intent(this, StartActivity.class);
         intent.putExtra("device", device);
