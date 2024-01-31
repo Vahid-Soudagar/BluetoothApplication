@@ -1,15 +1,15 @@
 package com.example.bluetoothapplication.data;
 
 
+import android.util.Log;
+
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
-/**
- * Created by ZXX on 2016/1/8.
- */
 public class DataParser {
 
     //Const
-    public String TAG = this.getClass().getSimpleName();
+    public String TAG = "myTag";
 
     //Buffer queue
     private LinkedBlockingQueue<Integer> bufferQueue   = new LinkedBlockingQueue<Integer>(256);
@@ -102,8 +102,8 @@ public class DataParser {
     }
 
     private void ParsePackage(int[] pkgData) {
-        // TODO Auto-generated method stub
         int pkgType = pkgData[3];
+        Log.d(TAG, "Pkg Data: "+ Arrays.toString(pkgData));
         int[] tempBuffer = new int[5];
 
         switch (pkgType) {
@@ -119,8 +119,9 @@ public class DataParser {
                 mListener.onECGReceived(params);
                 break;
             case PKG_NIBP:
-                //Log.i(TAG, "pkg_nibp");
+                Log.d(TAG, "pkg_nibp");
                 NIBP params2 = new NIBP(pkgData[6],pkgData[7],pkgData[8],pkgData[5]*2,pkgData[4]);
+                Log.d(TAG, "pkg_nibp: "+ params2);
                 mListener.onNIBPReceived(params2);
                 break;
             case PKG_SPO2_PARAMS:
