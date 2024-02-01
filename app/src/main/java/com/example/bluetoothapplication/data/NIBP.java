@@ -42,6 +42,26 @@ public class NIBP {
         return status;
     }
 
+    public void setHighPressure(int highPressure) {
+        this.highPressure = highPressure;
+    }
+
+    public void setMeanPressure(int meanPressure) {
+        this.meanPressure = meanPressure;
+    }
+
+    public void setLowPressure(int lowPressure) {
+        this.lowPressure = lowPressure;
+    }
+
+    public void setCuffPressure(int cuffPressure) {
+        this.cuffPressure = cuffPressure;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     @Override
     public String toString() {
         return  "Cuff:" +  (cuffPressure!=0 ? cuffPressure: "- -") + "\r\n" +

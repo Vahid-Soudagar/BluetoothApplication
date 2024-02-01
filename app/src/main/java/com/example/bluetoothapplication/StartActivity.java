@@ -89,8 +89,8 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
     }
 
 //    private void appendToChat(String msg){
-////        String text = binding.activityChatMessages.getText().toString()+"\n"+msg;
-////        binding.activityChatMessages.setText(text);
+//        String text = binding.activityChatMessages.getText().toString()+"\n"+msg;
+//        binding.activityChatMessages.setText(text);
 //    }
 
     private DeviceCallBack deviceCallback = new DeviceCallBack() {
@@ -107,12 +107,14 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
             binding.layoutNibp.getRoot().setVisibility(View.GONE);
         }
 
+//        [1, -17, -65, -67, -17, -65, -67, -17, -65, -67, -17, -65, -67, -17, -65, -67, -17, -65, -67, -17, -65, -67, 116, 85, -17, -65, -67]
+//        android:text="Cuff:--\nHigh:-- Low:-- Mean:--"
         @Override
         public void onMessage(byte[] message) {
-//            String str = new String(message);
-//            appendToChat("<- "+str);
+//            NIBP nibp = new NIBP(message[0], message[1], message[2], message[3], message[4]);
             Log.d(TAG, "Receiveing response : "+ Arrays.toString(message));
             dataParser.add(message);
+            binding.layoutNibp.tvNIBPinfo.setText(Arrays.toString(message));
         }
 
         @Override
