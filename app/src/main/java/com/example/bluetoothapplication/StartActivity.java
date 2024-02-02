@@ -136,6 +136,7 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
     @Override
     public void onSpO2WaveReceived(int dat) {
         Log.d(TAG, "onSpO2WaveReceived "+dat);
+
     }
 
     @Override
