@@ -29,6 +29,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -36,6 +37,7 @@ import java.util.UUID;
 public class Bluetooth {
 
     private final String DEFAULT_UUID = "00001101-0000-1000-8000-00805f9b34fb";
+    private final String TAG = this.getClass().getSimpleName();
 
     private Activity activity;
     private Context context;
@@ -437,10 +439,11 @@ public class Bluetooth {
             try {
                 while((msg = reader.read()) != null) {
                     if(deviceCallBack != null){
-                        final byte[] msgCopy = msg;
+                        byte[] msgCopy = msg;
                         ThreadHelper.run(runOnUi, activity, new Runnable() {
                             @Override
                             public void run() {
+                                Log.d(TAG, "Message Getting from Machine "+ Arrays.toString(msgCopy));
                                 deviceCallBack.onMessage(msgCopy);
                             }
                         });

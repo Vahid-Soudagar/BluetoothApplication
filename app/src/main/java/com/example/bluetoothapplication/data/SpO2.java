@@ -1,9 +1,5 @@
 package com.example.bluetoothapplication.data;
 
-/**
- * Created by ZXX on 2016/8/3.
- */
-
 public class SpO2 {
     public int SPO2_INVALID = 127;
     public int PULSE_RATE_INVALID = 255;
