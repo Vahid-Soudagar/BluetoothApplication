@@ -1,8 +1,5 @@
 package com.example.bluetoothapplication.data;
 
-/**
- * Created by ZXX on 2016/8/3.
- */
 
 public class Temp {
     public int TEMP_INVALID = 0;

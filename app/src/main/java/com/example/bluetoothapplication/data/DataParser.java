@@ -9,7 +9,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class DataParser {
 
     //Const
-    public String TAG = "myTag";
+    public String TAG = this.getClass().getSimpleName();;
 
     //Buffer queue
     private LinkedBlockingQueue<Integer> bufferQueue   = new LinkedBlockingQueue<Integer>(256);
@@ -29,8 +29,9 @@ public class DataParser {
 
     //Parse Runnable
     private ParseRunnable mParseRunnable;
-    private boolean isStop = false;
+    private boolean isStop = true;
     private onPackageReceivedListener mListener;
+
     public interface onPackageReceivedListener {
         void onSpO2WaveReceived(int dat);
         void onSpO2Received(SpO2 spo2);
@@ -68,7 +69,7 @@ public class DataParser {
         int[] packageData;
         @Override
         public void run() {
-            while (!isStop) {
+            while (isStop) {
                 dat = getData();
                 if(dat == PACKAGE_HEAD[0]){
                     dat = getData();

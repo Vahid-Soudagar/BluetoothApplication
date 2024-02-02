@@ -164,6 +164,7 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
 
     @Override
     public void onFirmwareReceived(String str) {
+
         Log.d(TAG, "onHardwareReceived "+str);
     }
 
