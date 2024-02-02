@@ -97,7 +97,6 @@ public class Bluetooth {
         }
     }
 
-
     @SuppressLint("MissingPermission")
     public void enable() {
         if (bluetoothAdapter != null) {
@@ -430,6 +429,7 @@ public class Bluetooth {
                 Log.w(getClass().getSimpleName(), e.getMessage());
             }
         }
+
 
         @Override
         public void run() {

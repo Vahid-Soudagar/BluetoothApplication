@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,19 +9,33 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:scrollbars="none">
 
-    <TextView
-        android:id="@+id/activity_chat_status"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="18sp"
-        android:layout_alignParentTop="true"/>
+        android:orientation="vertical">
 
-   <include
-       android:id="@+id/layout_nibp"
-       layout="@layout/layout_nibp"/>
+        <TextView
+            android:id="@+id/activity_chat_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:layout_alignParentTop="true"/>
+
+        <include layout="@layout/layout_ecg"
+            android:id="@+id/layout_ecg"/>       <!--ECG-->
+        <include layout="@layout/layout_spo2"
+            android:id="@+id/layout_spo2"/>      <!--SPO2-->
+        <include layout="@layout/layout_temp"
+            android:id="@+id/layout_temp"/>      <!--TEMP-->
+        <include layout="@layout/layout_nibp"
+            android:id="@+id/layout_nibp"/>      <!--NIBP-->
+        <include layout="@layout/layout_about"
+            android:id="@+id/layout_about"/>     <!--ABOUT-->
+
+    </LinearLayout>
 
 
-
-</RelativeLayout>
+</ScrollView>

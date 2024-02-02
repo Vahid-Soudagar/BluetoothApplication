@@ -29,15 +29,9 @@ public class DataParser {
 
     //Parse Runnable
     private ParseRunnable mParseRunnable;
-    private boolean       isStop = true;
-         
+    private boolean isStop = false;
     private onPackageReceivedListener mListener;
-
-    /**
-     * interface for parameters changed.
-     */
-    public interface onPackageReceivedListener
-    {
+    public interface onPackageReceivedListener {
         void onSpO2WaveReceived(int dat);
         void onSpO2Received(SpO2 spo2);
 
@@ -52,31 +46,29 @@ public class DataParser {
         void onHardwareReceived(String str);
     }
 
-    //Constructor
     public DataParser(onPackageReceivedListener listener) {
+        Log.d(TAG, "Inside Data Parser Construction");
         this.mListener = listener;
     }
 
-    public void start()
-    {
+    public void start() {
+        Log.d(TAG, "Inside Data Parser Start Method");
         mParseRunnable = new ParseRunnable();
+//        operation will perform in seperate thread
         new Thread(mParseRunnable).start();
     }
 
-    public void stop()
-    {
+    public void stop() {
         isStop = true;
     }
 
-    /**
-     * ParseRunnable
-     */
+
     class ParseRunnable implements Runnable {
         int dat;
         int[] packageData;
         @Override
         public void run() {
-            while (isStop) {
+            while (!isStop) {
                 dat = getData();
                 if(dat == PACKAGE_HEAD[0]){
                     dat = getData();
@@ -152,12 +144,8 @@ public class DataParser {
 
     }
 
-    /**
-     * Add the data received from USB or Bluetooth
-     * @param dat
-     */
-    public void add(byte[] dat)
-    {
+    public void add(byte[] dat) {
+        Log.d(TAG, "Inside Add Method "+Arrays.toString(dat));
         for(byte b : dat)
         {
             try {
@@ -166,34 +154,28 @@ public class DataParser {
                 e.printStackTrace();
             }
         }
-
-        //Log.i(TAG, "add: "+ bufferQueue.size());
+        Log.d(TAG, "After Add Method "+bufferQueue.toString());
     }
 
-    /**
-     * Get Dat from Queue
-     * @return
-     */
-    private int getData()
-    {
+
+    private int getData() {
         int dat = 0;
         try {
+            Log.d(TAG, "Inside Get Data "+bufferQueue.take());
             dat = bufferQueue.take();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Log.d(TAG, String.valueOf(e));
         }
+        Log.d(TAG, "Exiting Get Data "+dat);
         return dat;
     }
     private boolean CheckSum(int[] packageData) {
-        // TODO Auto-generated method stub
         int sum = 0;
-        for(int i = 2; i < packageData.length-1; i++)
-        {
+        for(int i = 2; i < packageData.length-1; i++) {
             sum+=(packageData[i]);
         }
 
-        if(((~sum)&0xff) == (packageData[packageData.length-1]&0xff))
-        {
+        if(((~sum)&0xff) == (packageData[packageData.length-1]&0xff)) {
             return true;
         }
 
