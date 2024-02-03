@@ -419,17 +419,22 @@ public class Bluetooth {
         private BluetoothSocket socket;
         private BluetoothDevice device;
         private OutputStream out;
+        private InputStream mmInputStream;
 
         public ReceiveThread(Class<?> readerClass, BluetoothSocket socket, BluetoothDevice bluetoothDevice) {
             this.socket = socket;
             this.device = bluetoothDevice;
+            InputStream tmpIn = null;
             try {
                 out = socket.getOutputStream();
                 InputStream in = socket.getInputStream();
                 this.reader = (SocketReader) readerClass.getDeclaredConstructor(InputStream.class).newInstance(in);
+                tmpIn = socket.getInputStream();
             } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 Log.w(getClass().getSimpleName(), e.getMessage());
             }
+
+            mmInputStream = tmpIn;
         }
 
 
@@ -461,6 +466,40 @@ public class Bluetooth {
                 }
             }
         }
+
+//        @Override
+//        public void run() {
+//            int bytes;
+//            while (isConnected()) {
+//                try {
+//                    byte[] buffer = new byte[256];
+//                    bytes = mmInputStream.read(buffer);
+//                    if (bytes > 0) {
+//                        byte[] data = new byte[bytes];
+//                        System.arraycopy(buffer, 0, data, 0, bytes);
+//                        if (deviceCallBack != null){
+//                            ThreadHelper.run(runOnUi, activity, new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    Log.d(TAG, "Message Getting from Machine and sending it to activity "+ Arrays.toString(data));
+//                                    deviceCallBack.onMessage(data);
+//                                }
+//                            });
+//                        }
+//                    }
+//                } catch (IOException e) {
+//                    connected = false;
+//                    if(deviceCallBack != null){
+//                        ThreadHelper.run(runOnUi, activity, new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                deviceCallBack.onDeviceDisconnected(device, e.getMessage());
+//                            }
+//                        });
+//                    }
+//                }
+//            }
+//        }
 
         public BluetoothSocket getSocket() {
             return socket;

@@ -26,6 +26,7 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
     private BluetoothDevice device;
     private static final String TAG = "myTag";
     private static final String RESPONSE_TAG = "responseTag";
+    private static final String ERROR_TAG = "errorTag";
     DataParser dataParser;
 
     @Override
@@ -116,7 +117,7 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
 
         @Override
         public void onError(int errorCode) {
-
+            Log.d(ERROR_TAG, errorCode+" ");
         }
         @SuppressLint("SetTextI18n")
         @Override
@@ -136,40 +137,46 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
     @Override
     public void onSpO2WaveReceived(int dat) {
         Log.d(TAG, "onSpO2WaveReceived "+dat);
+        binding.layoutSpo2.wfSpO2.addAmp(dat);
     }
 
     @Override
     public void onSpO2Received(SpO2 spo2) {
         Log.d(TAG, "onSpO2Received "+spo2.toString());
+        binding.layoutSpo2.tvSPO2info.setText(spo2.toString());
     }
 
     @Override
     public void onECGWaveReceived(int dat) {
         Log.d(TAG, "onECGWaveReceived "+dat);
+        binding.layoutEcg.wfECG.addAmp(dat);
     }
     @Override
     public void onECGReceived(ECG ecg) {
         Log.d(TAG, "onECGReceived "+ecg.toString());
+        binding.layoutEcg.tvECGinfo.setText(ecg.toString());
     }
 
     @Override
     public void onTempReceived(Temp temp) {
         Log.d(TAG, "onTempReceived "+temp.toString());
+        binding.layoutTemp.tvTEMPinfo.setText(temp.toString());
     }
     @Override
     public void onNIBPReceived(NIBP nibp) {
         Log.d(TAG, "onNIBPReceived "+nibp.toString());
-
+        binding.layoutNibp.tvNIBPinfo.setText(nibp.toString());
     }
 
     @Override
     public void onFirmwareReceived(String str) {
-
         Log.d(TAG, "onHardwareReceived "+str);
+        binding.layoutAbout.tvFWverison.setText(str);
     }
 
     @Override
     public void onHardwareReceived(String str) {
         Log.d(TAG, "onHardwareReceived "+str);
+        binding.layoutAbout.tvHWverison.setText(str);
     }
 }
