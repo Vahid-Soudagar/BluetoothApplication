@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.bluetoothapplication.bluetooth.Bluetooth;
 import com.example.bluetoothapplication.callbacks.DeviceCallBack;
@@ -44,12 +46,15 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
         binding.layoutEcg.getRoot().setVisibility(View.GONE);
         binding.layoutSpo2.getRoot().setVisibility(View.GONE);
 
-        initData();
-
+//        initData();
+        Log.d(TAG, "Created Data PArse object");
+        dataParser = new DataParser(this);
+        Log.d(TAG, "Data parse initiate start");
+        dataParser.start();
 
         binding.layoutNibp.btnNIBPStart.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view) {Toast.makeText(StartActivity.this, "Click on bp start", Toast.LENGTH_LONG).show();
                 bluetooth.send(DataParser.CMD_START_NIBP);
             }
         });
@@ -63,11 +68,12 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
 
     }
 
-    private void initData() {
-        Log.d(TAG, "Inside init data");
-        dataParser = new DataParser(this);
-        dataParser.start();
-    }
+//    not showing logs "it must show in logs"
+//    private void initData() {
+//        Log.d(TAG, "Inside init data");
+//        dataParser = new DataParser(this);
+//        dataParser.start();
+//    }
 
     @Override
     protected void onStart() {

@@ -37,7 +37,7 @@ import java.util.UUID;
 public class Bluetooth {
 
     private final String DEFAULT_UUID = "00001101-0000-1000-8000-00805f9b34fb";
-    private final String TAG = this.getClass().getSimpleName();
+    private final String TAG = "bluetoothtag";
 
     private Activity activity;
     private Context context;
@@ -419,49 +419,88 @@ public class Bluetooth {
         private BluetoothSocket socket;
         private BluetoothDevice device;
         private OutputStream out;
-
+        private InputStream mmInputStream;
         public ReceiveThread(Class<?> readerClass, BluetoothSocket socket, BluetoothDevice bluetoothDevice) {
             this.socket = socket;
             this.device = bluetoothDevice;
+            InputStream tmpIn = null;
             try {
                 out = socket.getOutputStream();
                 InputStream in = socket.getInputStream();
-                this.reader = (SocketReader) readerClass.getDeclaredConstructor(InputStream.class).newInstance(in);
-            } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+       //         this.reader = (SocketReader) readerClass.getDeclaredConstructor(InputStream.class).newInstance(in);
+                tmpIn = socket.getInputStream();
+            } catch (IOException e) {
                 Log.w(getClass().getSimpleName(), e.getMessage());
             }
+            mmInputStream = tmpIn;
         }
 
 
+//        @Override
+//        public void run() {
+//            byte[] msg;
+//            try {
+//                while((msg = reader.read()) != null) {
+//                    if(deviceCallBack != null){
+//                        byte[] msgCopy = msg;
+//                        ThreadHelper.run(runOnUi, activity, new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Log.d(TAG, "Message Getting from Machine "+ Arrays.toString(msgCopy));
+//                                Log.d(TAG, "Message Getting from Machine "+ msgCopy);
+//                                Log.d(TAG, "Message Getting from Machine "+ msgCopy.toString());
+//                                deviceCallBack.onMessage(msgCopy);
+//                            }
+//                        });
+//                    }
+//                }
+//            } catch (final IOException e) {
+//                connected = false;
+//                if(deviceCallBack != null){
+//                    ThreadHelper.run(runOnUi, activity, new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            deviceCallBack.onDeviceDisconnected(device, e.getMessage());
+//                        }
+//                    });
+//                }
+//            }
+//        }
+
         @Override
+
         public void run() {
-            byte[] msg;
-            try {
-                while((msg = reader.read()) != null) {
-                    if(deviceCallBack != null){
-                        byte[] msgCopy = msg;
+            int bytes;
+            while (isConnected()) {
+                try {
+                    byte[] buffer = new byte[256];
+                    bytes = mmInputStream.read(buffer);
+                    if (bytes > 0) {
+                        byte[] data = new byte[bytes];
+                        System.arraycopy(buffer, 0, data, 0, bytes);
+                        if (deviceCallBack != null) {
+                            ThreadHelper.run(runOnUi, activity, new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.d(TAG, "Message Getting from Machine and sending it to activity " + Arrays.toString(data));
+                                    deviceCallBack.onMessage(data);
+                                }
+                            });
+                        }
+                    }
+                } catch (IOException e) {
+                    connected = false;
+                    if (deviceCallBack != null) {
                         ThreadHelper.run(runOnUi, activity, new Runnable() {
                             @Override
                             public void run() {
-                                Log.d(TAG, "Message Getting from Machine "+ Arrays.toString(msgCopy));
-                                deviceCallBack.onMessage(msgCopy);
+                                deviceCallBack.onDeviceDisconnected(device, e.getMessage());
                             }
                         });
                     }
                 }
-            } catch (final IOException e) {
-                connected = false;
-                if(deviceCallBack != null){
-                    ThreadHelper.run(runOnUi, activity, new Runnable() {
-                        @Override
-                        public void run() {
-                            deviceCallBack.onDeviceDisconnected(device, e.getMessage());
-                        }
-                    });
-                }
             }
         }
-
         public BluetoothSocket getSocket() {
             return socket;
         }

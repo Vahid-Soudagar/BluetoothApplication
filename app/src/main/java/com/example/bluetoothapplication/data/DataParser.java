@@ -9,10 +9,13 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class DataParser {
 
     //Const
-    public String TAG = this.getClass().getSimpleName();;
+    public String TAG = "myTag";
+
+    public String PARSE_CLASS = "parseClass";
+    public String IRR_TAG = "irreleventData";
 
     //Buffer queue
-    private LinkedBlockingQueue<Integer> bufferQueue   = new LinkedBlockingQueue<Integer>(256);
+    private LinkedBlockingQueue<Integer> bufferQueue   = new LinkedBlockingQueue<Integer>(1010);
     private int[]         PACKAGE_HEAD        = new int[]{0x55,0xaa};
     private final int     PKG_ECG_WAVE        = 0x01;
     private final int     PKG_ECG_PARAMS      = 0x02;
@@ -140,13 +143,14 @@ public class DataParser {
                 mListener.onHardwareReceived(sb1.toString());
                 break;
             default:
+                Log.d(IRR_TAG, "Data irrelevant");
                 break;
         }
 
     }
 
     public void add(byte[] dat) {
-        Log.d(TAG, "Inside Add Method "+Arrays.toString(dat));
+        Log.d(PARSE_CLASS, "Inside Add Method "+Arrays.toString(dat));
         for(byte b : dat)
         {
             try {
@@ -155,19 +159,19 @@ public class DataParser {
                 e.printStackTrace();
             }
         }
-        Log.d(TAG, "After Add Method "+bufferQueue.toString());
+        Log.d(PARSE_CLASS, "After Add Method "+bufferQueue.toString());
     }
 
 
     private int getData() {
         int dat = 0;
         try {
-            Log.d(TAG, "Inside Get Data "+bufferQueue.take());
+            Log.d(PARSE_CLASS, "Inside Get Data "+bufferQueue.take());
             dat = bufferQueue.take();
         } catch (InterruptedException e) {
             Log.d(TAG, String.valueOf(e));
         }
-        Log.d(TAG, "Exiting Get Data "+dat);
+        Log.d(PARSE_CLASS, "Exiting Get Data "+dat);
         return dat;
     }
     private boolean CheckSum(int[] packageData) {
