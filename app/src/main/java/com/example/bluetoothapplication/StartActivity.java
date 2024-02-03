@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.bluetoothapplication.bluetooth.Bluetooth;
 import com.example.bluetoothapplication.callbacks.DeviceCallBack;
@@ -25,6 +27,7 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
     private Bluetooth bluetooth;
     private BluetoothDevice device;
     private static final String TAG = "myTag";
+    private final String MY_TAG = "debugTag";
     private static final String RESPONSE_TAG = "responseTag";
     private static final String ERROR_TAG = "errorTag";
     DataParser dataParser;
@@ -51,6 +54,7 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
         binding.layoutNibp.btnNIBPStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Toast.makeText(StartActivity.this, "Click on bp start", Toast.LENGTH_LONG).show();
                 bluetooth.send(DataParser.CMD_START_NIBP);
             }
         });
@@ -111,7 +115,9 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
 
         @Override
         public void onMessage(byte[] message) {
+            Log.d(MY_TAG, "Message received from Bluetooth");
             Log.d(RESPONSE_TAG, Arrays.toString(message));
+            Log.d(MY_TAG, "Message sending to data parser activity");
             dataParser.add(message);
         }
 
@@ -167,6 +173,8 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
         Log.d(TAG, "onNIBPReceived "+nibp.toString());
         binding.layoutNibp.tvNIBPinfo.setText(nibp.toString());
     }
+
+//    bluetooth -> activity -> parsing -> ui set
 
     @Override
     public void onFirmwareReceived(String str) {

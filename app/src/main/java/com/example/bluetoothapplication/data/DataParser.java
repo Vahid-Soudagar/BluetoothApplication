@@ -9,7 +9,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class DataParser {
 
     //Const
-    public String TAG = this.getClass().getSimpleName();;
+    public String TAG = this.getClass().getSimpleName();
+    private final String MY_TAG = "debugTag";
 
     //Buffer queue
     private LinkedBlockingQueue<Integer> bufferQueue   = new LinkedBlockingQueue<Integer>(256);
@@ -146,7 +147,7 @@ public class DataParser {
     }
 
     public void add(byte[] dat) {
-        Log.d(TAG, "Inside Add Method "+Arrays.toString(dat));
+        Log.d(MY_TAG, "Inside Add Method "+Arrays.toString(dat));
         for(byte b : dat)
         {
             try {
@@ -155,7 +156,7 @@ public class DataParser {
                 e.printStackTrace();
             }
         }
-        Log.d(TAG, "After Add Method "+bufferQueue.toString());
+        Log.d(MY_TAG, "After Add Method "+bufferQueue.toString());
     }
 
 

@@ -38,6 +38,7 @@ public class Bluetooth {
 
     private final String DEFAULT_UUID = "00001101-0000-1000-8000-00805f9b34fb";
     private final String TAG = this.getClass().getSimpleName();
+    private final String MY_TAG = "debugTag";
 
     private Activity activity;
     private Context context;
@@ -418,88 +419,63 @@ public class Bluetooth {
         private SocketReader reader;
         private BluetoothSocket socket;
         private BluetoothDevice device;
-        private OutputStream out;
-        private InputStream mmInputStream;
+        private OutputStream outputStream;
+        private InputStream inputStream;
 
         public ReceiveThread(Class<?> readerClass, BluetoothSocket socket, BluetoothDevice bluetoothDevice) {
             this.socket = socket;
             this.device = bluetoothDevice;
             InputStream tmpIn = null;
+            OutputStream tmpOut = null;
             try {
-                out = socket.getOutputStream();
-                InputStream in = socket.getInputStream();
-                this.reader = (SocketReader) readerClass.getDeclaredConstructor(InputStream.class).newInstance(in);
+                tmpOut = socket.getOutputStream();
                 tmpIn = socket.getInputStream();
-            } catch (IOException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            } catch (IOException e) {
                 Log.w(getClass().getSimpleName(), e.getMessage());
             }
 
-            mmInputStream = tmpIn;
+            inputStream = tmpIn;
+            outputStream = tmpOut;
         }
 
 
         @Override
         public void run() {
-            byte[] msg;
-            try {
-                while((msg = reader.read()) != null) {
+            int bytes;
+            while (isConnected()) {
+                try {
+                    byte[] buffer = new byte[256];
+                    bytes = inputStream.read(buffer);
+                    if (bytes > 0) {
+                        byte[] data = new byte[bytes];
+                        System.arraycopy(buffer, 0, data, 0, bytes);
+                        if (deviceCallBack != null){
+                            ThreadHelper.run(runOnUi, activity, new Runnable() {
+                                @Override
+                                public void run() {
+                                    Log.d(MY_TAG, "Message Getting from Machine and sending it to activity");
+                                    Log.d(TAG, "Message Getting from Machine and sending it to activity "+ Arrays.toString(data));
+                                    deviceCallBack.onMessage(data);
+                                }
+                            });
+                        }
+                    }
+                } catch (IOException e) {
+                    connected = false;
                     if(deviceCallBack != null){
-                        byte[] msgCopy = msg;
                         ThreadHelper.run(runOnUi, activity, new Runnable() {
                             @Override
                             public void run() {
-                                Log.d(TAG, "Message Getting from Machine "+ Arrays.toString(msgCopy));
-                                deviceCallBack.onMessage(msgCopy);
+                                deviceCallBack.onDeviceDisconnected(device, e.getMessage());
                             }
                         });
                     }
                 }
-            } catch (final IOException e) {
-                connected = false;
-                if(deviceCallBack != null){
-                    ThreadHelper.run(runOnUi, activity, new Runnable() {
-                        @Override
-                        public void run() {
-                            deviceCallBack.onDeviceDisconnected(device, e.getMessage());
-                        }
-                    });
-                }
             }
         }
 
-//        @Override
-//        public void run() {
-//            int bytes;
-//            while (isConnected()) {
-//                try {
-//                    byte[] buffer = new byte[256];
-//                    bytes = mmInputStream.read(buffer);
-//                    if (bytes > 0) {
-//                        b yte[] data = new byte[bytes];
-//                        System.arraycopy(buffer, 0, data, 0, bytes);
-//                        if (deviceCallBack != null){
-//                            ThreadHelper.run(runOnUi, activity, new Runnable() {
-//                                @Override
-//                                public void run() {
-//                                    Log.d(TAG, "Message Getting from Machine and sending it to activity "+ Arrays.toString(data));
-//                                    deviceCallBack.onMessage(data);
-//                                }
-//                            });
-//                        }
-//                    }
-//                } catch (IOException e) {
-//                    connected = false;
-//                    if(deviceCallBack != null){
-//                        ThreadHelper.run(runOnUi, activity, new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                deviceCallBack.onDeviceDisconnected(device, e.getMessage());
-//                            }
-//                        });
-//                    }
-//                }
-//            }
-//        }
+
+
 
         public BluetoothSocket getSocket() {
             return socket;
@@ -510,7 +486,7 @@ public class Bluetooth {
         }
 
         public OutputStream getOutputStream() {
-            return out;
+            return outputStream;
         }
     }
 
