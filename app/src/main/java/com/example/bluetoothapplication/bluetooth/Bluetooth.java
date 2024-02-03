@@ -475,7 +475,7 @@ public class Bluetooth {
 //                    byte[] buffer = new byte[256];
 //                    bytes = mmInputStream.read(buffer);
 //                    if (bytes > 0) {
-//                        byte[] data = new byte[bytes];
+//                        b yte[] data = new byte[bytes];
 //                        System.arraycopy(buffer, 0, data, 0, bytes);
 //                        if (deviceCallBack != null){
 //                            ThreadHelper.run(runOnUi, activity, new Runnable() {
