@@ -9,10 +9,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class DataParser {
 
     //Const
+
     public String TAG = "myTag";
 
-    public String PARSE_CLASS = "parseClass";
-    public String IRR_TAG = "irreleventData";
+
 
     //Buffer queue
     private LinkedBlockingQueue<Integer> bufferQueue   = new LinkedBlockingQueue<Integer>(1010);
@@ -74,7 +74,10 @@ public class DataParser {
         public void run() {
             while (isStop) {
                 dat = getData();
+                Log.d(TAG, "Inside parse method"+dat);
                 if(dat == PACKAGE_HEAD[0]){
+
+//                    getting an array og byte value
                     dat = getData();
                     if(dat == PACKAGE_HEAD[1]) {
                         int packageLen = getData();
@@ -89,9 +92,16 @@ public class DataParser {
                         }
 
                         if(CheckSum(packageData)){
+                            Log.d(TAG, "going to parse package");
                             ParsePackage(packageData);
+                        } else {
+                            Log.d(TAG, "else of parse package");
                         }
+                    } else {
+                        Log.d(TAG, "data is not packgage head 1");
                     }
+                } else {
+                    Log.d(TAG, "data is not package head 0");
                 }
             }
         }
@@ -143,44 +153,45 @@ public class DataParser {
                 mListener.onHardwareReceived(sb1.toString());
                 break;
             default:
-                Log.d(IRR_TAG, "Data irrelevant");
+                Log.d(TAG, "Data irrelevant");
                 break;
         }
 
     }
 
     public void add(byte[] dat) {
-        Log.d(PARSE_CLASS, "Inside Add Method "+Arrays.toString(dat));
+
         for(byte b : dat)
         {
             try {
                 bufferQueue.put(toUnsignedInt(b));
             } catch (InterruptedException e) {
+                Log.d(TAG, "tag _debugging"+ e.getMessage());
                 e.printStackTrace();
             }
         }
-        Log.d(PARSE_CLASS, "After Add Method "+bufferQueue.toString());
+
     }
 
 
     private int getData() {
         int dat = 0;
         try {
-            Log.d(PARSE_CLASS, "Inside Get Data "+bufferQueue.take());
             dat = bufferQueue.take();
         } catch (InterruptedException e) {
             Log.d(TAG, String.valueOf(e));
         }
-        Log.d(PARSE_CLASS, "Exiting Get Data "+dat);
         return dat;
     }
     private boolean CheckSum(int[] packageData) {
+        Log.d(TAG, "Inside checksum ");
         int sum = 0;
         for(int i = 2; i < packageData.length-1; i++) {
             sum+=(packageData[i]);
         }
 
         if(((~sum)&0xff) == (packageData[packageData.length-1]&0xff)) {
+            Log.d(TAG, "Value of sum "+sum);
             return true;
         }
 

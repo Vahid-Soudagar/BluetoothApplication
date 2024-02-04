@@ -38,6 +38,8 @@ public class Bluetooth {
 
     private final String DEFAULT_UUID = "00001101-0000-1000-8000-00805f9b34fb";
     private final String TAG = "bluetoothtag";
+//    private final String TAG = this.getClass().getSimpleName();
+    private final String MY_TAG = "debugTag";
 
     private Activity activity;
     private Context context;
@@ -420,19 +422,22 @@ public class Bluetooth {
         private BluetoothDevice device;
         private OutputStream out;
         private InputStream mmInputStream;
+        private OutputStream outputStream;
+        private InputStream inputStream;
         public ReceiveThread(Class<?> readerClass, BluetoothSocket socket, BluetoothDevice bluetoothDevice) {
             this.socket = socket;
             this.device = bluetoothDevice;
             InputStream tmpIn = null;
+            OutputStream tmpOut = null;
             try {
-                out = socket.getOutputStream();
-                InputStream in = socket.getInputStream();
-       //         this.reader = (SocketReader) readerClass.getDeclaredConstructor(InputStream.class).newInstance(in);
+                tmpOut = socket.getOutputStream();
                 tmpIn = socket.getInputStream();
             } catch (IOException e) {
                 Log.w(getClass().getSimpleName(), e.getMessage());
             }
             mmInputStream = tmpIn;
+            inputStream = tmpIn;
+            outputStream = tmpOut;
         }
 
 
@@ -468,7 +473,6 @@ public class Bluetooth {
 //        }
 
         @Override
-
         public void run() {
             int bytes;
             while (isConnected()) {
@@ -483,7 +487,7 @@ public class Bluetooth {
                                 @Override
                                 public void run() {
                                     Log.d(TAG, "Message Getting from Machine and sending it to activity " + Arrays.toString(data));
-                                    deviceCallBack.onMessage(data);
+                                  deviceCallBack.onMessage(data);
                                 }
                             });
                         }
@@ -510,7 +514,7 @@ public class Bluetooth {
         }
 
         public OutputStream getOutputStream() {
-            return out;
+            return outputStream;
         }
     }
 

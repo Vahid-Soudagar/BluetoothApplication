@@ -27,7 +27,9 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
     private Bluetooth bluetooth;
     private BluetoothDevice device;
     private static final String TAG = "myTag";
+    private final String MY_TAG = "debugTag";
     private static final String RESPONSE_TAG = "responseTag";
+    private static final String ERROR_TAG = "errorTag";
     DataParser dataParser;
 
     @Override
@@ -35,6 +37,8 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
         super.onCreate(savedInstanceState);
         binding = ActivityStartBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        Log.d(TAG, "Log in sarting of create method");
 
         device = getIntent().getParcelableExtra("device");
         bluetooth = new Bluetooth(this);
@@ -47,6 +51,7 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
         binding.layoutSpo2.getRoot().setVisibility(View.GONE);
 
 //        initData();
+//        this should noe be null
         Log.d(TAG, "Created Data PArse object");
         dataParser = new DataParser(this);
         Log.d(TAG, "Data parse initiate start");
@@ -54,7 +59,7 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
 
         binding.layoutNibp.btnNIBPStart.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {Toast.makeText(StartActivity.this, "Click on bp start", Toast.LENGTH_LONG).show();
+            public void onClick(View view) {
                 bluetooth.send(DataParser.CMD_START_NIBP);
             }
         });
@@ -116,13 +121,15 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
 
         @Override
         public void onMessage(byte[] message) {
+            Log.d(MY_TAG, "Message received from Bluetooth");
             Log.d(RESPONSE_TAG, Arrays.toString(message));
+            Log.d(MY_TAG, "Message sending to data parser activity");
             dataParser.add(message);
         }
 
         @Override
         public void onError(int errorCode) {
-
+            Log.d(ERROR_TAG, errorCode+" ");
         }
         @SuppressLint("SetTextI18n")
         @Override
@@ -142,41 +149,48 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
     @Override
     public void onSpO2WaveReceived(int dat) {
         Log.d(TAG, "onSpO2WaveReceived "+dat);
-
+        binding.layoutSpo2.wfSpO2.addAmp(dat);
     }
 
     @Override
     public void onSpO2Received(SpO2 spo2) {
         Log.d(TAG, "onSpO2Received "+spo2.toString());
+        binding.layoutSpo2.tvSPO2info.setText(spo2.toString());
     }
 
     @Override
     public void onECGWaveReceived(int dat) {
         Log.d(TAG, "onECGWaveReceived "+dat);
+        binding.layoutEcg.wfECG.addAmp(dat);
     }
     @Override
     public void onECGReceived(ECG ecg) {
         Log.d(TAG, "onECGReceived "+ecg.toString());
+        binding.layoutEcg.tvECGinfo.setText(ecg.toString());
     }
 
     @Override
     public void onTempReceived(Temp temp) {
         Log.d(TAG, "onTempReceived "+temp.toString());
+        binding.layoutTemp.tvTEMPinfo.setText(temp.toString());
     }
     @Override
     public void onNIBPReceived(NIBP nibp) {
         Log.d(TAG, "onNIBPReceived "+nibp.toString());
-
+        binding.layoutNibp.tvNIBPinfo.setText(nibp.toString());
     }
+
+//    bluetooth -> activity -> parsing -> ui set
 
     @Override
     public void onFirmwareReceived(String str) {
-
         Log.d(TAG, "onHardwareReceived "+str);
+        binding.layoutAbout.tvFWverison.setText(str);
     }
 
     @Override
     public void onHardwareReceived(String str) {
         Log.d(TAG, "onHardwareReceived "+str);
+        binding.layoutAbout.tvHWverison.setText(str);
     }
 }
