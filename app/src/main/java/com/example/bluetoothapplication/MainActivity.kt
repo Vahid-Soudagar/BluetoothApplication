@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         private fun doOperation() {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_LONG).show()
-            val intent = Intent(this, PrinterActivity::class.java)
+            val intent = Intent(this, ScanActivity::class.java)
             startActivity(intent)
         }
 
