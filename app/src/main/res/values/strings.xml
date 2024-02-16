@@ -2,4 +2,23 @@
     <string name="app_name">BluetoothApplication</string>
     <string name="bluetooth_title">Bluetooth</string>
     <string name="search_devices">Search Devices</string>
+    <string name="btn_discovery">Discovery</string>
+    <string name="title_target">Target</string>
+    <string name="title_printerseries">Printer Series</string>
+    <string name="title_lang">Lang</string>
+    <string name="title_drawer">Drawer</string>
+    <string name="btn_samplereceipt">Sample Receipt</string>
+    <string name="btn_samplecoupon">Sample Coupon</string>
+    <string name="btn_monitor">Status Monitoring</string>
+    <string name="btn_restart">Restart</string>
+    <string name="btn_setting">Setting</string>
+    <string name="title_activity_discovery">DiscoveryActivity</string>
+    <string name="title_printerlist">Printer List</string>
+    <string name="default_target">TCP:192.168.192.168</string>
+    <string name="title_warnings">Printer Warnings</string>
+    <string name="print_job_id">ABC123</string>
+    <string name="title_err_code">Error Code</string>
+    <string name="title_err_method">Method</string>
+    <string name="title_msg_result">Result</string>
+    <string name="title_msg_description">Description</string>
 </resources>

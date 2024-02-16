@@ -27,7 +27,6 @@ public class ScanActivity extends AppCompatActivity {
     private ArrayAdapter<String> pairedListAdapter;
     private List<BluetoothDevice> pairedDevices;
     private List<BluetoothDevice> scannedDevices;
-
     private boolean scanning = false;
 
 

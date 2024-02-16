@@ -41,9 +41,11 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
         Log.d(TAG, "Log in sarting of create method");
 
         device = getIntent().getParcelableExtra("device");
+
         bluetooth = new Bluetooth(this);
         bluetooth.setCallbackOnUI(this);
         bluetooth.setDeviceCallback(deviceCallback);
+
         binding.layoutNibp.getRoot().setVisibility(View.GONE);
         binding.layoutTemp.getRoot().setVisibility(View.GONE);
         binding.layoutAbout.getRoot().setVisibility(View.GONE);
@@ -72,13 +74,6 @@ public class StartActivity extends AppCompatActivity implements DataParser.onPac
         });
 
     }
-
-//    not showing logs "it must show in logs"
-//    private void initData() {
-//        Log.d(TAG, "Inside init data");
-//        dataParser = new DataParser(this);
-//        dataParser.start();
-//    }
 
     @Override
     protected void onStart() {

@@ -15,13 +15,14 @@ import com.example.bhfinal.utils.Permission.warningPermissionDialog
 
 class MainActivity : AppCompatActivity() {
 
-        private val multiPermissionList = if (Build.VERSION.SDK_INT >= 33) {
+        private val multiPermissionList = if (Build.VERSION.SDK_INT >= 31) {
             arrayListOf(
                 android.Manifest.permission.BLUETOOTH_CONNECT,
                 android.Manifest.permission.BLUETOOTH_SCAN,
                 android.Manifest.permission.BLUETOOTH_ADVERTISE,
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
+                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                android.Manifest.permission.INTERNET
             )
         } else {
             arrayListOf(
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
                 android.Manifest.permission.BLUETOOTH_ADMIN,
                 android.Manifest.permission.ACCESS_FINE_LOCATION,
                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                android.Manifest.permission.INTERNET
             )
         }
 
@@ -47,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         private fun doOperation() {
             Toast.makeText(this, "All Permission Granted", Toast.LENGTH_LONG).show()
-            val intent = Intent(this, ScanActivity::class.java)
+            val intent = Intent(this, PrinterActivity::class.java)
             startActivity(intent)
         }
 
