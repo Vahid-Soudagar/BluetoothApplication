@@ -1,6 +1,11 @@
 package com.example.bluetoothapplication
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.net.wifi.p2p.WifiP2pConfig
+import android.net.wifi.p2p.WifiP2pDevice
+import android.net.wifi.p2p.WifiP2pManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -13,105 +18,73 @@ import com.epson.epos2.discovery.DiscoveryListener
 import com.epson.epos2.discovery.FilterOption
 import com.example.bluetoothapplication.databinding.ActivityDiscoveryBinding
 
-class DiscoveryActivity : AppCompatActivity(), AdapterView.OnItemClickListener {
+class DiscoveryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDiscoveryBinding
+    private val TAG = "myTag"
 
-    private var mPrinterList: ArrayList<HashMap<String, String>>? = null
-    private var mPrinterListAdapter: SimpleAdapter? = null
-    private var mFilterOption: FilterOption? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDiscoveryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        mPrinterList = java.util.ArrayList()
-        mPrinterListAdapter = SimpleAdapter(
-            this,
-            mPrinterList,
-            R.layout.devices_dialog_bluetooth_item,
-            arrayOf<String>("PrinterName", "Target"),
-            intArrayOf(R.id.tvBtItemName, R.id.tvBtItemAddr)
-        )
-
-        binding.lstReceiveData.adapter = mPrinterListAdapter
-        binding.lstReceiveData.onItemClickListener = this
-
-        mFilterOption = FilterOption()
-        mFilterOption!!.deviceType = Discovery.TYPE_PRINTER
-        mFilterOption!!.epsonFilter = Discovery.FILTER_NAME
-        mFilterOption!!.usbDeviceName = Discovery.TRUE
-
-        try {
-            Discovery.start(this, mFilterOption, mDiscoveryListener)
-        } catch (e: Exception) {
-            Log.d("myTag", e.toString())
-        }
-
         binding.btnRestart.setOnClickListener {
-            startDiscovery()
+            discoverDevices()
         }
+
     }
-    override fun onDestroy() {
-        super.onDestroy()
-        while (true) {
-            try {
-                Discovery.stop()
-                break
-            } catch (e: Epos2Exception) {
-                if (e.errorStatus != Epos2Exception.ERR_PROCESSING) {
-                    break
+
+    @SuppressLint("MissingPermission")
+    private fun discoverDevices() {
+        val manager = getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
+        val channel: WifiP2pManager.Channel = manager.initialize(this, mainLooper, null)
+
+        manager.discoverPeers(channel, object : WifiP2pManager.ActionListener {
+            override fun onSuccess() {
+                // Discovery initiated successfully
+                Log.d(TAG, "Discovery initiated successfully")
+
+                // Request the current list of peers
+                manager.requestPeers(channel) { peers ->
+                    // Log all discovered devices
+                    for (device in peers.deviceList) {
+                        Log.d(TAG, "Device name: ${device.deviceName}, Address: ${device.deviceAddress}")
+                        binding.txtList.text = device.deviceName
+                        binding.txtList.setOnClickListener {
+                            connectToDevice(device)
+                        }
+                    }
                 }
             }
-        }
-        mFilterOption = null
-    }
 
-    override fun onItemClick(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-        val intent = Intent()
-
-        val item = mPrinterList!![position]
-        var target = item["Target"]
-        if (target!!.startsWith("USB:")) {
-            target = "USB:"
-        }
-
-        intent.putExtra(getString(R.string.title_target), target)
-
-        setResult(RESULT_OK, intent)
-
-        finish()
-    }
-
-    private fun startDiscovery() {
-        while (true) {
-            try {
-                Discovery.stop()
-                break
-            } catch (e: Epos2Exception) {
-                if (e.errorStatus != Epos2Exception.ERR_PROCESSING) {
-                    Log.d("myTag", e.toString())
-                    return
-                }
+            override fun onFailure(reasonCode: Int) {
+                // Log failure
+                Log.e(TAG, "Discovery failed with reason code: $reasonCode")
             }
-        }
-        mPrinterList!!.clear()
-        mPrinterListAdapter!!.notifyDataSetChanged()
-        try {
-            Discovery.start(this, mFilterOption, mDiscoveryListener)
-        } catch (e: java.lang.Exception) {
-            Log.d("myTag", e.toString())
-        }
+        })
     }
 
-    private val mDiscoveryListener =
-        DiscoveryListener { deviceInfo ->
-            runOnUiThread {
-                val item = java.util.HashMap<String, String>()
-                item["PrinterName"] = deviceInfo.deviceName
-                item["Target"] = deviceInfo.target
-                mPrinterList!!.add(item)
-                mPrinterListAdapter!!.notifyDataSetChanged()
+    @SuppressLint("MissingPermission")
+    private fun connectToDevice(device: WifiP2pDevice) {
+        val config = WifiP2pConfig()
+        config.deviceAddress = device.deviceAddress
+
+        val manager = getSystemService(Context.WIFI_P2P_SERVICE) as WifiP2pManager
+        val channel: WifiP2pManager.Channel = manager.initialize(this, mainLooper, null)
+
+        manager.connect(channel, config, object : WifiP2pManager.ActionListener {
+            override fun onSuccess() {
+                // Connection successful
+                Log.d(TAG, "Connected to device: ${device.deviceName}")
+                // You can perform any action here after successfully connecting to the device
             }
-        }
+
+            override fun onFailure(reason: Int) {
+                // Connection failed
+                Log.e(TAG, "Failed to connect to device: ${device.deviceName}, Reason: $reason")
+                // You can handle the failure case here
+            }
+        })
+    }
+
 }
